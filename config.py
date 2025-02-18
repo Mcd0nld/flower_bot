@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# загружаем из .env
+# загружаем .env
 load_dotenv()
 
 # токен бота
