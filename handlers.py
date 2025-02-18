@@ -27,6 +27,7 @@ async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def ask_birthday(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос даты рождения пользователя"""
     context.user_data["birth_date"] = update.message.text
+    print(update.effective_chat.id, OPERATOR_CHAT_ID)
     await update.message.reply_text("Теперь введи свой номер телефона (+7):")
     return ASK_PHONE
 
@@ -52,6 +53,11 @@ async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await update.message.reply_text("Спасибо! Наш оператор скоро с вами свяжется. @FiorePerAmore1")
+    return ConversationHandler.END
+
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработчик отмены"""
+    await update.message.reply_text("Диалог отменен.")
     return ConversationHandler.END
 
 
