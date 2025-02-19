@@ -15,20 +15,24 @@ ASK_NAME, ASK_BIRTHDAY, ASK_PHONE = range(3)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Приветствие пользователя"""
-    await update.message.reply_text("Привет! Как тебя зовут?")
+    await update.message.reply_text("🌸 Fiore per Amore приветствует вас! 🌸")
+    await update.message.reply_text("Рады видеть вас здесь! Мы поможем вам выбрать идеальные цветы для любого случая. 🎁💐\nДавайте познакомимся поближе, чтобы сделать ваш опыт еще удобнее! 😊")
+    await update.message.reply_text("Как к вам обращаться? (Напишите ваше имя)")
     return ASK_NAME
 
 async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос имени пользователя"""
     context.user_data["name"] = update.message.text
-    await update.message.reply_text("Отлично! Теперь укажи свою дату рождения (ГГГГ-ММ-ДД):")
+    await update.message.reply_text(f"✨ Приятно познакомиться, {context.user_data['name']}!")
+    await update.message.reply_text("Когда у вас день рождения? 🎂")
+    await update.message.reply_text("Мы любим радовать наших клиентов! Напишите дату в формате ДД.ММ.ГГГГ.")
     return ASK_BIRTHDAY
 
 async def ask_birthday(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос даты рождения пользователя"""
     context.user_data["birth_date"] = update.message.text
-    print(update.effective_chat.id, OPERATOR_CHAT_ID)
-    await update.message.reply_text("Теперь введи свой номер телефона (+7):")
+    await update.message.reply_text("🎉 Отлично! Возможность для вас, получить скидку в этот день!")
+    await update.message.reply_text("Оставьте ваш номер телефона 📱, чтобы мы могли связаться с вами по заказу. (+7)")
     return ASK_PHONE
 
 async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -52,7 +56,9 @@ async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=f"📩 Новый клиент!\nИмя: {context.user_data['name']}\nДата рождения: {context.user_data['birth_date']}\nТелефон: {context.user_data['phone_number']}"
     )
 
-    await update.message.reply_text("Спасибо! Наш оператор скоро с вами свяжется. @FiorePerAmore1")
+    await update.message.reply_text(f"✅ Спасибо, {context.user_data['name']}! Теперь вы с нами, и мы всегда готовы помочь вам выбрать самые красивые цветы! 🌹")
+    await update.message.reply_text("📩 Для продолжения оформления заказа, скоро с вами свяжется - @FiorePerAmore1")
+    await update.message.reply_text("✨ Fiore per Amore – цветы, которые говорят за вас! ✨")
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
