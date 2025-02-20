@@ -1,11 +1,10 @@
 from telegram import Update
-from telegram.ext import (
-    ContextTypes,
-    ConversationHandler,
-)
+from telegram.ext import ContextTypes, ConversationHandler
 from sqlalchemy.orm import sessionmaker
 from database import engine, Customer
 from config import OPERATOR_CHAT_ID
+import re
+from datetime import datetime
 
 # cоздаем сессию для работы с бд
 Session = sessionmaker(bind=engine)
@@ -13,6 +12,26 @@ Session = sessionmaker(bind=engine)
 # определяем состояния
 ASK_NAME, ASK_BIRTHDAY, ASK_PHONE = range(3)
 
+# функции валидации
+def is_valid_name(name):
+    """Проверка, что имя содержит только буквы"""
+    return bool(re.match(r"^[А-Яа-яA-Za-z\s-]{2,50}$", name))
+
+def is_valid_date(date_text):
+    """Проверка формата даты рождения"""
+    try:
+        datetime.strptime(date_text, "%d.%m.%Y")
+        return True
+    except ValueError:
+        return False
+
+def is_valid_phone(phone):
+    """Проверка формата телефона"""
+    if not isinstance(phone, str):
+        return False
+    return bool(re.match(r"^(\+7|8)\d{10}$", phone))
+
+# обработчики состояний
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Приветствие пользователя"""
     await update.message.reply_text("🌸 Fiore per Amore приветствует вас! 🌸")
@@ -22,6 +41,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос имени пользователя"""
+    name = update.message.text.strip()
+    if not is_valid_name(name):
+        await update.message.reply_text("❌ Некорректное имя..\n\nВведите имя снова, оно должно состоять только из букв!")
+        return ASK_NAME
+    
     context.user_data["name"] = update.message.text
     await update.message.reply_text(f"✨ Приятно познакомиться, {context.user_data['name']}!")
     await update.message.reply_text("Когда у вас день рождения? 🎂")
@@ -30,13 +54,23 @@ async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def ask_birthday(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос даты рождения пользователя"""
+    bith_date = update.message.text.strip()
+    if not is_valid_date(bith_date):
+        await update.message.reply_text("❌ Некорректная дата..\n\nВведите в формате ДД.ММ.ГГГГ.")
+        return ASK_BIRTHDAY
+
     context.user_data["birth_date"] = update.message.text
     await update.message.reply_text("🎉 Отлично! Возможность для вас, получить скидку в этот день!")
-    await update.message.reply_text("Оставьте ваш номер телефона 📱, чтобы мы могли связаться с вами по заказу. (+7)")
+    await update.message.reply_text("Оставьте ваш номер телефона 📱, чтобы мы могли связаться с вами. (+7)")
     return ASK_PHONE
 
 async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос номера телефона и сохранение данных пользователя"""
+    phone_number = update.message.text.strip()
+    if not is_valid_phone(phone_number):
+        await update.message.reply_text("❌ Некорректный номер..\n\nВведите в формате +7XXXXXXXXXX.")
+        return ASK_PHONE
+
     context.user_data["phone_number"] = update.message.text
 
     # сохранение данных в бд
