@@ -35,33 +35,31 @@ def is_valid_phone(phone):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Приветствие пользователя"""
     await update.message.reply_text("🌸 Fiore per Amore приветствует вас! 🌸")
-    await update.message.reply_text("Рады видеть вас здесь! Мы поможем вам выбрать идеальные цветы для любого случая. 🎁💐\nДавайте познакомимся поближе, чтобы сделать ваш опыт еще удобнее! 😊")
-    await update.message.reply_text("Как к вам обращаться? (Напишите ваше имя)")
+    await update.message.reply_text("Рады видеть вас! Мы поможем вам выбрать идеальный букет для близкого человека. 🎁💐")
+    await update.message.reply_text("Как к вам обращаться?")
     return ASK_NAME
 
 async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос имени пользователя"""
     name = update.message.text.strip()
     if not is_valid_name(name):
-        await update.message.reply_text("❌ Некорректное имя..\n\nВведите имя снова, оно должно состоять только из букв!")
+        await update.message.reply_text("❌ Некорректное имя..\n\nВведите имя снова, оно должно состоять только из букв.")
         return ASK_NAME
     
     context.user_data["name"] = update.message.text
     await update.message.reply_text(f"✨ Приятно познакомиться, {context.user_data['name']}!")
-    await update.message.reply_text("Когда у вас день рождения? 🎂")
-    await update.message.reply_text("Мы любим радовать наших клиентов! Напишите дату в формате ДД.ММ.ГГГГ.")
+    await update.message.reply_text("Укажите дату своего рождения, чтобы получить возможность приобрести букет со скидкой!")
     return ASK_BIRTHDAY
 
 async def ask_birthday(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запрос даты рождения пользователя"""
     bith_date = update.message.text.strip()
     if not is_valid_date(bith_date):
-        await update.message.reply_text("❌ Некорректная дата..\n\nВведите в формате ДД.ММ.ГГГГ.")
+        await update.message.reply_text("❌ Некорректная дата..\n\nВведите дату в формате ДД.ММ.ГГГГ.")
         return ASK_BIRTHDAY
 
     context.user_data["birth_date"] = update.message.text
-    await update.message.reply_text("🎉 Отлично! Возможность для вас, получить скидку в этот день!")
-    await update.message.reply_text("Оставьте ваш номер телефона 📱, чтобы мы могли связаться с вами. (+7)")
+    await update.message.reply_text("🎉 Отлично! Оставьте ваш номер телефона, чтобы мы могли связаться.")
     return ASK_PHONE
 
 async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -92,7 +90,6 @@ async def ask_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(f"✅ Спасибо, {context.user_data['name']}! Теперь вы с нами, и мы всегда готовы помочь вам выбрать самые красивые цветы! 🌹")
     await update.message.reply_text("📩 Для продолжения оформления заказа, скоро с вами свяжется - @FiorePerAmore1")
-    await update.message.reply_text("✨ Fiore per Amore – цветы, которые говорят за вас! ✨")
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
